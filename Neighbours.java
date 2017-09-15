@@ -31,21 +31,13 @@ import static java.lang.System.*;
 
 
 /*
-
  *  Program to simulate segregation.
-
  *  See : http://nifty.stanford.edu/2014/mccown-schelling-model-segregation/
-
  *
-
  * NOTE:
-
  * - JavaFX first calls method init() and then method start() far below.
-
  * - To test uncomment call to test() first in init() method!
-
  *
-
  */
 
 // Extends Application because of JavaFX (just accept for now)
@@ -114,12 +106,8 @@ public class Neighbours extends Application {
 
         test();    // <---------------- Uncomment to TEST!
 
-        // %-distribution of RED, BLUE and NONE
-
         int nLocations = 900;
-
         Actor[] arr = generateDistribution(nLocations,0.25,0.25);
-
         arr = shuffle(arr);
 
         //out.print(Arrays.toString(arr));
@@ -189,17 +177,32 @@ public class Neighbours extends Application {
 
     }
 
-    Actor[]shuffle(Actor[] arr){
+    State[]shuffle(State[] arr){
 
         for(int i=0; i < arr.length;i++){
 
             int slapdash = rand.nextInt(arr.length);
-
+            State temporary;
+            temporary = arr[i];
             arr[i] = arr[slapdash];
+            arr[slapdash]=temporary;
 
         }return arr;
 
     }
+    Actor [] shuffle(Actor[]arr){
+        for(int i=0; i < arr.length;i++){
+
+            int slapdash = rand.nextInt(arr.length);
+            Actor temporary;
+            temporary = arr[i];
+            arr[i] = arr[slapdash];
+            arr[slapdash]=temporary;
+
+        }return arr;
+
+    }
+
 
     Actor[][]ArraytoMatrix(Actor[] array){
 
@@ -284,7 +287,56 @@ public class Neighbours extends Application {
             }
         }return actorStates;
     }
+    int [] arrayofNA (State[][] states){
+        int count=0;
+        for (int row=0; row < states.length;row++){
+            for (int col=0; col < states.length;col++){
+                if (states[row][col] == State.NA){
+                    count++;
+                }
+            }
+        }
+        int [] arrayNA= new int[count];
+        int arrayIndex=0;
+        int matrixIndex=0;
+        for (int row=0; row < states.length;row++){
+            for (int col=0; col < states.length;col++){
+                if (states[row][col] == State.NA){
+                    arrayNA[arrayIndex]=matrixIndex;
+                    arrayIndex++;
 
+                }matrixIndex++;
+            }
+
+        }return arrayNA;
+
+
+    }
+    int [] arrayofUNSATISFIED (State[][] states){
+        int count=0;
+        for (int row=0; row < states.length;row++){
+            for (int col=0; col < states.length;col++){
+                if (states[row][col] == State.UNSATISFIED){
+                    count++;
+                }
+            }
+        }
+        int [] arrayUNSATISFIED= new int[count];
+        int arrayIndex=0;
+        int matrixIndex=0;
+        for (int row=0; row < states.length;row++){
+            for (int col=0; col < states.length;col++){
+                if (states[row][col] == State.UNSATISFIED){
+                    arrayUNSATISFIED[arrayIndex]=matrixIndex;
+                    arrayIndex++;
+
+                }matrixIndex++;
+            }
+
+        }return arrayUNSATISFIED;
+
+
+    }
 
 
 
@@ -303,6 +355,9 @@ public class Neighbours extends Application {
 
         // A small hard coded world for testing
 
+        int [] arr = {1,2,3,4};
+        arr[1]=arr[3];
+        out.print(Arrays.toString(arr));
         world = new Actor[][]{
 
                 {Actor.RED, Actor.RED, Actor.NONE},
@@ -314,20 +369,22 @@ public class Neighbours extends Application {
         };
         int number = numberofNeighbours(world,1,1);
         out.println(number);
+
         double th = 0.5;   // Simple threshold used for testing
         int colorNeighbors = sameColour(world,1,1);
         out.println(colorNeighbors);
+
         State[][] actorStates = CheckSatifaction(world,th);
         plotMatrix(actorStates);
-        // A first test!
 
         int s = world.length;
-
         out.println(isValidLocation(s, 0, 0));
 
+        int [] arrayNA = arrayofNA(actorStates);
+        out.println(Arrays.toString(arrayNA));
 
-
-
+        int[]arrayUNSATISFIED = arrayofUNSATISFIED(actorStates);
+        out.println(Arrays.toString(arrayUNSATISFIED));
 
         /* Move of unsatisfied hard to test because of random */
 

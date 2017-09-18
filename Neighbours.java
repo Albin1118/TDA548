@@ -86,7 +86,12 @@ public class Neighbours extends Application {
 
         final double threshold = 0.7;
 
+        State [][]actorStates = CheckSatifaction(world,threshold);
 
+        int []arrofNA = arrayofNA(actorStates);
+        arrofNA = shuffle(arrofNA);
+
+        world = updateworld(world,actorStates,arrofNA);
 
         // TODO add methods
 
@@ -104,31 +109,23 @@ public class Neighbours extends Application {
 
     public void init(){
 
-        test();    // <---------------- Uncomment to TEST!
+        //test();    // <---------------- Uncomment to TEST!
 
         int nLocations = 900;
+
         Actor[] arr = generateDistribution(nLocations,0.25,0.25);
         arr = shuffle(arr);
 
         //out.print(Arrays.toString(arr));
 
-        Actor[][] world = ArraytoMatrix(arr);
+        world = ArraytoMatrix(arr);
 
         //out.print(Arrays.toString(world[0]));
 
-        plotMatrix(world);
-
-
+        //plotMatrix(world);
 
         //double[] dist = {0.25, 0.25, 0.50};
 
-        // Number of locations (places) in world (square)
-
-        // TODO find methods that does the job
-
-        // ...
-
-        // world =           // Finally set world variable
 
     }
 
@@ -177,7 +174,7 @@ public class Neighbours extends Application {
 
     }
 
-    State[]shuffle(State[] arr){
+    /*State[]shuffle(State[] arr){
 
         for(int i=0; i < arr.length;i++){
 
@@ -189,12 +186,24 @@ public class Neighbours extends Application {
 
         }return arr;
 
-    }
+    }*/
     Actor [] shuffle(Actor[]arr){
         for(int i=0; i < arr.length;i++){
 
             int slapdash = rand.nextInt(arr.length);
             Actor temporary;
+            temporary = arr[i];
+            arr[i] = arr[slapdash];
+            arr[slapdash]=temporary;
+
+        }return arr;
+
+    }
+    int [] shuffle(int[]arr){
+        for(int i=0; i < arr.length;i++){
+
+            int slapdash = rand.nextInt(arr.length);
+            int temporary;
             temporary = arr[i];
             arr[i] = arr[slapdash];
             arr[slapdash]=temporary;
@@ -312,7 +321,7 @@ public class Neighbours extends Application {
 
 
     }
-    int [] arrayofUNSATISFIED (State[][] states){
+    /*int [] arrayofUNSATISFIED (State[][] states){
         int count=0;
         for (int row=0; row < states.length;row++){
             for (int col=0; col < states.length;col++){
@@ -336,6 +345,26 @@ public class Neighbours extends Application {
         }return arrayUNSATISFIED;
 
 
+    }*/
+    Actor [][] updateworld(Actor[][]world, State[][]actorstates, int [] arrayNA){
+        Actor[][]actors = world;
+        State [][]states = actorstates;
+        int []NA = arrayNA;
+        int arrayIndex=0;
+        for ( int row = 0; row < states.length;row++){
+            for (int col = 0; col < states.length; col++){
+                if (states[row][col]==State.UNSATISFIED){
+                    int currentIndex=NA[arrayIndex];
+                    int arrayRow = (currentIndex/actors.length);
+                    int arrayCol = (currentIndex % actors.length);
+
+                    Actor temporary = actors[row][col];
+                    actors[row][col]=actors[arrayRow][arrayCol];
+                    actors[arrayRow][arrayCol] = temporary;
+                    arrayIndex++;
+                }
+            }
+        }return actors;
     }
 
 
@@ -354,6 +383,8 @@ public class Neighbours extends Application {
     void test(){
 
         // A small hard coded world for testing
+        //int a = (4/5);
+        //out.print(a);
 
         int [] arr = {1,2,3,4};
         arr[1]=arr[3];
@@ -382,9 +413,16 @@ public class Neighbours extends Application {
 
         int [] arrayNA = arrayofNA(actorStates);
         out.println(Arrays.toString(arrayNA));
+        arrayNA = shuffle(arrayNA);
 
-        int[]arrayUNSATISFIED = arrayofUNSATISFIED(actorStates);
-        out.println(Arrays.toString(arrayUNSATISFIED));
+        world = updateworld(world,actorStates,arrayNA);
+        plotMatrix(world);
+
+
+
+
+        //int[]arrayUNSATISFIED = arrayofUNSATISFIED(actorStates);
+        //out.println(Arrays.toString(arrayUNSATISFIED));
 
         /* Move of unsatisfied hard to test because of random */
 

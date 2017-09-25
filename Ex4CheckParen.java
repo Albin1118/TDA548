@@ -104,29 +104,27 @@ public class Ex4CheckParen {
         }
 
     }
-    boolean checkNesting (Deque<Character> stack, char [] array){
-        for (int i = (array.length-1); i >= 0; i--){
+    boolean checkNesting (Deque<Character> stack, char [] array) {
+        for (int i = (array.length - 1); i >= 0; i--) {
             stack.push(array[i]);
         }
         char current;
         char next;
-        for ( int i =0; i < stack.size();){
+        int error = 0;
+        for (int i = 1; i < stack.size(); ) {
 
-            current=stack.pop();
+            current = stack.pop();
             next = stack.peek();
-            if (current=='(' && (next==']' || next=='}')){
+            if (current == '(' && (next == ']' || next == '}')) {
                 return false;
-            }else if ( current=='[' && (next==')' || next=='}')){
+            } else if (current == '[' && (next == ')' || next == '}')) {
                 return false;
-            }else if ( current== '{' && (next==')' || next==']')){
+            } else if (current == '{' && (next == ')' || next == ']')) {
                 return false;
-            }else {
-                return true;
             }
-
-
-            }
+        }
         return true;
+
     }
     void test(){
         char [] ch = {'(',')','[',']', '{', '}'};

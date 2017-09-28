@@ -3,6 +3,7 @@ package calc;
 import java.util.*;
 
 import static java.lang.Double.NaN;
+import static java.lang.Double.valueOf;
 import static java.lang.Math.pow;
 
 
@@ -26,14 +27,38 @@ public class Calculator {
         if (expr.length() == 0) {
             return NaN;
         }
-        // List<String> tokens = tokenize(expr);       <---------------- HERE are the methods!!!!
-        // List<String> postfix = infix2Postfix(tokens);
-        return 0; // 0 just for now, should be: return evalPostfix(postfix);
+        List<String> tokens = tokenize(expr);      // <---------------- HERE are the methods!!!!
+        List<String> postfix = infix2Postfix(tokens);
+        Deque<String>stack = new ArrayDeque<>();
+        return evalPostfix(postfix, stack);
     }
 
     // ------  Evaluate RPN expression -------------------
 
-    // TODO
+   double evalPostfix (List<String>postfix, Deque<String>stack) {
+        for ( int i = 0; i < postfix.size();i++) {
+            if (OPERATORS.contains(postfix.get(i))){
+                double operand_1 = valueOf(stack.pop());
+                if (stack.isEmpty()){
+                    throw new IllegalArgumentException(MISSING_OPERAND);
+                }
+                double operand_2 = valueOf(stack.pop());
+                String operator = postfix.get(i);
+                double result = applyOperator(operator, operand_1, operand_2);
+                stack.push(String.valueOf(result));
+
+            }else if (!OPERATORS.contains(postfix.get(i))) {
+                stack.push(postfix.get(i));
+
+            }
+
+        }
+        if (stack.size()>1){
+            throw new IllegalArgumentException(MISSING_OPERATOR);
+        }
+        double result = valueOf(stack.pop());
+        return result;
+   }
 
     double applyOperator(String op, double d1, double d2) {
         switch (op) {
@@ -56,42 +81,50 @@ public class Calculator {
 
     // ------- Infix 2 Postfix ------------------------
 
+    // Error messages
+    final static String MISSING_OPERATOR = "Missing operator or parenthesis";
+    final static String OP_NOT_FOUND = "Operator not found";
+
     List<String>infix2Postfix(List<String>tokens){
+
         List<String>postfix = new ArrayList<>();
         Deque<String>stack = new ArrayDeque<>();
+
         while (!tokens.isEmpty()){
             String temp = tokens.get(0);
             tokens.remove(0);
             algorithm(postfix, stack, temp);
-
         }
+
         while (!stack.isEmpty()){
             if ( stack.peek().equals("(")){
                 stack.pop();
+
             }else{
-            postfix.add(stack.pop());
+                postfix.add(stack.pop());
             }
 
         }
 
         return postfix;
+
     }
+
     void algorithm(List<String>postfix, Deque<String>stack, String temp){
         if (Character.isDigit(temp.charAt(0))){
             postfix.add(temp);
         }else if (OPERATORS.contains(temp)){
             if (stack.isEmpty()) {
-
                 stack.push(temp);
             }else{
-                while((!stack.isEmpty()) && (!PARENTHESES.contains(stack.peek())) && (getPrecedence(stack.peek()) >= getPrecedence(temp)) && (getAssociativity(temp)==Assoc.LEFT)){
+                while((!stack.isEmpty()) && (!PARENTHESES.contains(stack.peek())) &&
+                        (getPrecedence(stack.peek()) >= getPrecedence(temp)) && (getAssociativity(temp)==Assoc.LEFT)){
                     postfix.add(stack.pop());
                 }
                 stack.push(temp);
             }
         }else if (temp.equals("(")){
             stack.push(temp);
-
         }else if ( temp.equals(")")){
             while (!stack.isEmpty() && !stack.peek().equals("(")){
                 postfix.add(stack.pop());
@@ -101,39 +134,7 @@ public class Calculator {
                 throw new IllegalArgumentException(MISSING_OPERATOR);
             }
         }
-
     }
-
-
-    /*while there are tokens to be read:
-    read a token.
-	if the token is a number, then push it to the output queue.
-	if the token is an operator, then:
-            while there is an operator at the top of the operator stack with
-                    greater than or equal to precedence and the operator is left associative:
-                    pop operators from the operator stack, onto the output queue.
-            push the read operator onto the operator stack.
-    if the token is a left bracket (i.e. "("), then:
-            push it onto the operator stack.
-    if the token is a right bracket (i.e. ")"), then:
-            while the operator at the top of the operator stack is not a left bracket:
-            pop operators from the operator stack onto the output queue.
-            pop the left bracket from the stack.
-		/* if the stack runs out without finding a left bracket, then there are
-		mismatched parentheses. */
-    /*if there are no more tokens to read:
-            while there are still operator tokens on the stack:
-    /* if the operator token on the top of the stack is a bracket, then
-    there are mismatched parentheses. */
-    //pop the operator onto the output queue.
-      //      exit.*/
-
-
-    // Error messages
-    final static String MISSING_OPERATOR = "Missing operator or parenthesis";
-    final static String OP_NOT_FOUND = "Operator not found";
-
-    // TODO
 
     int getPrecedence(String op) {
         if ("+-".contains(op)) {
@@ -164,41 +165,73 @@ public class Calculator {
 
     // ---------- Tokenize -----------------------
     List<String> tokenize(String expr) {
+
         List<String> tokens = new ArrayList<>();
+
         char[] expression = expr.toCharArray();
 
+
+
         for (int i = 0; i < expression.length; ) {
+
             if (Character.isDigit(expression[i])){
+
                 i = readNumber(tokens, expr, i);
+
             }else if (OPERATORS.contains(Character.toString(expression[i]))){
-               tokens.add(Character.toString(expression[i]));
-                i++;
-            }else if(PARENTHESES.contains(Character.toString(expression[i]))){
+
                 tokens.add(Character.toString(expression[i]));
+
                 i++;
+
+            }else if(PARENTHESES.contains(Character.toString(expression[i]))){
+
+                tokens.add(Character.toString(expression[i]));
+
+                i++;
+
             }else {
+
                 i++;
+
             }
+
             //use readnumber to add to list and get next index
+
             //if next char is operand, i++
+
         }
-
-
         return tokens;
+
     }
 
+
+
     int readNumber(List<String>tokens,String toRead, int startIndex){
+
         char [] array = toRead.toCharArray();
+
         int indexOfLastFoundDigit=0;
+
         String addToList = "";
+
         int i = startIndex;
 
-        while ( i < array.length && Character.isDigit(array[i])){
-            addToList = addToList + array[i];
-            indexOfLastFoundDigit=(i+1);
-            i++;
-        }
 
+
+        while ( i < array.length && Character.isDigit(array[i])){
+
+            addToList = addToList + array[i];
+
+            indexOfLastFoundDigit=(i+1);
+
+            i++;
+
+        }
         tokens.add(addToList);
+
         return indexOfLastFoundDigit;
-    }}
+
+    }
+}
+

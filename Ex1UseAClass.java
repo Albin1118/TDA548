@@ -44,14 +44,14 @@ public class Ex1UseAClass {
         Rational r2 = new Rational(1, 2);
         out.println();
         out.println(r1.add(r2).equals(new Rational(3, 4)));//toString
-        /*
         out.println(r1.sub(r2).equals(new Rational(-1, 4)));
         out.println(r1.mul(r2).equals(new Rational(1, 8)));
         out.println(r1.div(r2).equals(new Rational(1, 2)));
 
-        Rational r3 = new Rational(r1);
+        Rational r3 = (Rational)r1;
         out.println(r3.equals(r1));
         out.println(!r3.lessThan(r1));
+        out.println(r3.toDouble());
         out.println(abs(r3.toDouble() - 0.25) < 0.000001);
 
         List<Rational> rList = new ArrayList<>();
@@ -63,7 +63,7 @@ public class Ex1UseAClass {
         out.println(complexMsg.get(new Rational(1,1)).equals("one"));
 
         out.println(new Rational(6, 1).toString().equals("6 / 1"));
-        */
+
     }
 
 
@@ -100,6 +100,84 @@ public class Ex1UseAClass {
             denominator = denominator/g;
             return  new Rational (numerator, denominator);
         }
+        Rational sub(Rational b){
+            int numerator = (this.num * b.denom) - (this.denom * b.num);
+            int denominator = (this.denom * b.denom);
+            int g = gcd(numerator, denominator);
+
+            numerator = numerator/g;
+            denominator = denominator/g;
+            return  new Rational (numerator, denominator);
+        }
+        Rational mul(Rational b){
+            int numerator = (this.num * b.num);
+            int denominator = (this.denom * b.denom);
+            int g = gcd(numerator, denominator);
+
+            numerator = numerator/g;
+            denominator = denominator/g;
+            return  new Rational (numerator, denominator);
+        }
+        Rational div(Rational b){
+            int numerator = (this.num / b.num);
+            int denominator = (this.denom / b.denom);
+            int g = gcd(numerator, denominator);
+
+            numerator = numerator/g;
+            denominator = denominator/g;
+            return  new Rational (numerator, denominator);
+        }
+        Rational abs(){
+            int numerator = this.num;
+            int denominator = this.denom;
+            if (numerator<0){
+                numerator=-(numerator);
+            }
+            if (denominator<0){
+                denominator=-(denominator);
+            }
+            return new Rational(numerator, denominator);
+        }
+        public boolean equals (Object other){
+            if (this == other){
+                return true;
+            }
+            if (other == null || getClass() != other.getClass()){
+                return false;
+            }
+            Rational rational = (Rational) other;
+
+            return Integer.compare(rational.num, num)==0 &&
+            Integer.compare(rational.denom, denom)==0;
+        }
+        public boolean lessThan (Object other){
+            if (this==other) return false;
+            if (other == null || getClass() != other.getClass()) return false;
+            Rational rational = (Rational) other;
+            return Integer.compare(rational.num, num)<0 && Integer.compare(rational.denom, denom)<0;
+
+
+        }
+        public double toDouble(){
+            return ((double)(this.num)/(this.denom));
+        }
+        public int hashCode() {
+            int result;
+            long temp;
+            temp = Integer.toUnsignedLong(num);
+            result = (int) (temp ^ (temp >>> 32));
+            temp = Integer.toUnsignedLong(denom);
+            result = 31 * result + (int) (temp ^ (temp >>> 32));
+            return result;
+        }
+        public String toString(){
+           return (this.num + " / " + this.denom);
+
+        }
+
+
+
+
 
 
     }

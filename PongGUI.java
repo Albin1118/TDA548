@@ -42,7 +42,6 @@ import static pong.model.Pong.*;
 public class PongGUI extends Application {
 
 
-
     // The game
     private Pong pong;
 
@@ -50,17 +49,20 @@ public class PongGUI extends Application {
 
     private void keyPressed(KeyEvent event) {
         KeyCode kc = event.getCode();
-        out.println("Pressed " + kc );
+        out.println("Pressed " + kc);
         switch (kc) {
             case UP:
                 pong.getRightPaddle().movePaddle(Paddle.Direction.UP);
                 break;
+
             case DOWN:
                 pong.getRightPaddle().movePaddle(Paddle.Direction.DOWN);
                 break;
+
             case Q:
                 pong.getLeftPaddle().movePaddle(Paddle.Direction.UP);
                 break;
+
             case A:
                 pong.getLeftPaddle().movePaddle(Paddle.Direction.DOWN);
                 break;
@@ -123,9 +125,8 @@ public class PongGUI extends Application {
 
         // TODO ccreate a ball
         pong.newBall(pong.WIDTH/2, pong.HEIGHT/2, 20.0);
+
         Ball ball = pong.getBall();
-
-
 
         timer.start();
     }

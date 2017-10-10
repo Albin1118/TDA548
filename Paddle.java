@@ -25,23 +25,23 @@ public class Paddle {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.dy=0;
     }
 
     // TODO methods
     public void movePaddle(Direction d){
-    switch (d){
-        case UP:
-            dy =  - 2.0;
-            break;
-        case DOWN:
-            dy = + 2.0;
-            break;
-        case STOP:
-            dy = 0;
-            break;
+        switch (d){
+            case UP:
+                dy =  - 2.0;
+                break;
+            case DOWN:
+                dy = + 2.0;
+                break;
+            case STOP:
+                dy = 0;
+                break;
+        }
     }
-    }
+
     public void move(double windowHeight){
         if (getMinY() < 0){
             y = 0;
@@ -50,8 +50,9 @@ public class Paddle {
         }else{
             y= y + dy;
         }
-
     }
+
+
 
     // Utilities
     public double getMinX() {

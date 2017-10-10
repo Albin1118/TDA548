@@ -38,11 +38,9 @@ public class Pong {
     private int pointsRight;
     private Ball ball;
 
-
     public Pong(Paddle lPaddle, Paddle rPaddle) {
         this.lPaddle = lPaddle;
         this.rPaddle = rPaddle;
-
     }
 
     // --------  Game Logic -------------
@@ -59,32 +57,59 @@ public class Pong {
         if(ballHitX()){
             ball.resetBall();
         }
-
+        if(intersectLeft()){
+            ball.bounceX();
+            pointsLeft++;
+            ball.speedIncrease();
+        }if(intersectRight()){
+            ball.bounceX();
+            pointsRight++;
+            ball.speedIncrease();
+        }
 
     }
 
     // ----- Utility --------------
-    /*public boolean intersect(){
 
-
-
-
-
-    }*/
-
-
-
-
-
-
+    public boolean intersectLeft() {
+        if (ball.getSpeedX() > 0){
+            return false;
+        }
+        if (lPaddle.getMaxX() < ball.getMinX()) {
+            return false;
+        } else if (lPaddle.getMinX() > ball.getMaxX()) {
+            return false;
+        } else if (lPaddle.getMinY() > ball.getMaxY()) {
+            return false;
+        } else if (lPaddle.getMaxY() < ball.getMinY()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    public boolean intersectRight(){
+        if(ball.getSpeedX() < 0){
+            return false;
+        }
+        if (rPaddle.getMaxX() < ball.getMinX()){
+            return false;
+        }else if (rPaddle.getMinX() > ball.getMaxX()){
+            return false;
+        }else if(rPaddle.getMinY() > ball.getMaxY()){
+            return false;
+        }else if(rPaddle.getMaxY() < ball.getMinY()){
+            return false;
+        }else{
+            return true;
+        }
+    }
     public void newBall(double x, double y, double radius) {
-        //ball = new Ball(x, y, radius, 0, 0);
+       // ball = new Ball(x, y, radius, 0, 0);
 
         int[] dirs = {1, 2, 3 - 1, -2, -3};
         int dx = dirs[rand.nextInt(dirs.length)];
         int dy = dirs[rand.nextInt(dirs.length)];
         ball = new Ball(x, y, radius, dx, dy);   // TIP: For debug use dy = 0
-
 
     }
 
@@ -111,11 +136,14 @@ public class Pong {
     }
 
     public boolean ballHitY() {
-         return ball.getMinY() < 0 || HEIGHT < ball.getMaxY();
+        return ball.getMinY() < 0 || HEIGHT < ball.getMaxY();
     }
+
     public boolean ballHitX(){
         return ball.getMaxX() < -75 || WIDTH + 75 < ball.getMinX();
     }
+
+
 
 
 }
